@@ -12,6 +12,7 @@ import { LyricsDisplay } from './components/LyricsDisplay'
 import { TrackList } from './components/TrackList'
 import { InstallPrompt } from './components/InstallPrompt'
 import { getTrackSrc, truncateText } from './utils'
+import { updateMediaSession, registerMediaSessionHandlers, clearMediaSession } from './utils/mediaSession'
 
 export default function App() {
   const [library, setLibrary] = useState<MusicLibrary | null>(null)
@@ -221,6 +222,36 @@ export default function App() {
       audioRef.current.currentTime = time
     }
   }
+
+  // Register media session handlers for lock screen controls
+  useEffect(() => {
+    registerMediaSessionHandlers({
+      onPlay: () => {
+        if (audioRef.current && audioRef.current.paused && currentTrackIndex !== null) {
+          audioRef.current.play().catch(console.error)
+        }
+      },
+      onPause: () => {
+        if (audioRef.current && !audioRef.current.paused) {
+          audioRef.current.pause()
+        }
+      },
+      onNext: handleNext,
+      onPrevious: handlePrevious,
+      onSeek: handleSeek,
+    })
+  }, [])
+
+  // Update media session metadata when track or playback state changes
+  useEffect(() => {
+    const currentTrack = currentTrackIndex !== null ? tracks[currentTrackIndex] : null
+    
+    if (currentTrack) {
+      updateMediaSession(currentTrack, isPlaying, currentTime, duration)
+    } else {
+      clearMediaSession()
+    }
+  }, [currentTrackIndex, tracks, isPlaying, currentTime, duration])
 
   const currentTrack = currentTrackIndex !== null ? tracks[currentTrackIndex] : null
 
