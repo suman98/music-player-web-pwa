@@ -245,7 +245,7 @@ export default function App() {
       )}
 
       {/* Main content - With padding for fixed footer */}
-      <div className="flex-1 overflow-hidden flex flex-col lg:flex-row gap-3 sm:gap-4 p-2 sm:p-4 pb-24 sm:pb-28">
+      <div className={`flex-1 overflow-hidden flex flex-col lg:flex-row gap-3 sm:gap-4 p-2 sm:p-4 ${currentTrack ? 'pb-24 sm:pb-28' : ''}`}>
         {/* Left sidebar - Hidden on mobile, visible on lg+ */}
         <div className="hidden lg:flex lg:w-80 lg:flex-col lg:gap-6 lg:overflow-hidden">
           <RecentlyPlayed
@@ -262,7 +262,7 @@ export default function App() {
         </div>
 
         {/* Center panel - Main responsive content */}
-        <div className="flex-1 flex flex-col gap-2 sm:gap-4 min-w-0 overflow-hidden lg:overflow-visible">
+        <div className="flex-1 flex flex-col gap-2 sm:gap-4 min-w-0 min-h-0 lg:overflow-visible">
           {/* Desktop: Show player above playlist */}
           {currentTrack && (
             <div className="hidden lg:block">
@@ -271,7 +271,7 @@ export default function App() {
           )}
 
           {/* Playlist view */}
-          <div className="flex-1 min-h-0 -m-2 sm:-m-4 lg:m-0 overflow-y-auto">
+          <div className="flex-1 min-h-0 overflow-y-auto">
             <TrackList
               tracks={tracks}
               onTrackClick={handleTrackClick}

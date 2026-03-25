@@ -29,7 +29,7 @@ export function TrackList({
   const iconSize = isMobile ? 16 : 20
 
   return (
-    <div className={`glass-sm ${padding} flex-1 min-h-0 flex flex-col`}>
+    <div className={`glass-sm ${padding} flex-1 flex flex-col`}>
       <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-2 flex-shrink-0">Playlist</h3>
 
       <div className={`flex-1 min-h-0 overflow-y-auto space-y-0 pr-2 -mx-2`}>
@@ -46,7 +46,7 @@ export function TrackList({
             <button
               key={idx}
               onClick={() => onTrackClick(track)}
-              className={`w-full text-left ${trackPadding} transition-all duration-300 group mb-2 ${
+              className={`w-full text-left ${trackPadding} transition-all duration-300 group ${
                 currentTrack?.name === track.name
                   ? 'glass-sm ring-2 ring-purple-500'
                   : 'glass-sm hover:bg-white/10'
