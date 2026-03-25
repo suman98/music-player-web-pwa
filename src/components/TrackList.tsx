@@ -28,7 +28,6 @@ export function TrackList({
   const [searchQuery, setSearchQuery] = useState('')
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
   const [displayTracks, setDisplayTracks] = useState(tracks)
-  const [touchOverIndex, setTouchOverIndex] = useState<number | null>(null)
 
   // Sync displayTracks when tracks prop changes
   useEffect(() => {
@@ -74,34 +73,6 @@ export function TrackList({
     setDraggedIndex(null)
   }
 
-  const handleTouchStart = (e: React.TouchEvent, index: number) => {
-    setDraggedIndex(index)
-  }
-
-  const handleTouchMove = (e: React.TouchEvent, index: number) => {
-    if (draggedIndex !== null) {
-      setTouchOverIndex(index)
-    }
-  }
-
-  const handleTouchEnd = (e: React.TouchEvent, dropIndex: number) => {
-    if (draggedIndex === null || draggedIndex === dropIndex) {
-      setDraggedIndex(null)
-      setTouchOverIndex(null)
-      return
-    }
-
-    const newTracks = [...displayTracks]
-    const draggedTrack = newTracks[draggedIndex]
-    newTracks.splice(draggedIndex, 1)
-    newTracks.splice(dropIndex, 0, draggedTrack)
-    
-    setDisplayTracks(newTracks)
-    setDraggedIndex(null)
-    setTouchOverIndex(null)
-    onTracksReorder?.(newTracks)
-  }
-
   return (
     <div className={`glass-sm ${padding} flex-1 flex flex-col`}>
       {/* Search input */}
@@ -129,32 +100,26 @@ export function TrackList({
           [...filteredTracks].map((track, idx) => (
             <button
               key={idx}
-              draggable
-              style={{ 
-                touchAction: 'none',
+              draggable={!isMobile}
+              style={!isMobile ? ({ 
                 WebkitUserSelect: 'none',
                 userSelect: 'none'
-              }}
-              onDragStart={(e) => handleDragStart(e, idx)}
-              onDragOver={handleDragOver}
-              onDrop={(e) => handleDrop(e, idx)}
-              onDragEnd={handleDragEnd}
-              onTouchStart={(e) => handleTouchStart(e, idx)}
-              onTouchMove={(e) => handleTouchMove(e, idx)}
-              onTouchEnd={(e) => handleTouchEnd(e, idx)}
+              } as React.CSSProperties) : undefined}
+              onDragStart={!isMobile ? (e) => handleDragStart(e, idx) : undefined}
+              onDragOver={!isMobile ? handleDragOver : undefined}
+              onDrop={!isMobile ? (e) => handleDrop(e, idx) : undefined}
+              onDragEnd={!isMobile ? handleDragEnd : undefined}
               onClick={() => onTrackClick(track)}
               className={`w-full text-left ${trackPadding} transition-all duration-300 group ${
-                draggedIndex === idx ? 'opacity-50 bg-purple-500/20' : ''
-              } ${
-                touchOverIndex === idx && draggedIndex !== null ? 'border-t-2 border-purple-500' : ''
+                !isMobile && draggedIndex === idx ? 'opacity-50 bg-purple-500/20' : ''
               } ${
                 currentTrack?.name === track.name
                   ? 'glass-sm ring-2 ring-purple-500'
                   : 'glass-sm hover:bg-white/10'
-              } cursor-move`}
+              } ${isMobile ? 'cursor-pointer' : 'cursor-move'}`}
             >
               <div className="flex items-center gap-2 sm:gap-3">
-                <MdDragIndicator size={18} className="opacity-40 flex-shrink-0 hover:opacity-100 transition-opacity" />
+                {!isMobile && <MdDragIndicator size={18} className="opacity-40 flex-shrink-0 hover:opacity-100 transition-opacity" />}
                 <div className={`relative w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-pink-500/30 to-purple-600/30 flex items-center justify-center flex-shrink-0 text-xs font-semibold`}>
                   {currentTrack?.name === track.name && isPlaying ? (
                     <MdPlayArrow size={isMobile ? 12 : 14} className="fill-white" />
