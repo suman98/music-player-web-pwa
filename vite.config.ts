@@ -17,4 +17,5 @@ export default defineConfig({
   ssr: {
     noExternal: [],
   },
+  publicDir: 'public',
 })

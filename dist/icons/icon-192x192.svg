@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <style>
+      .bg { fill: #0f0f1e; }
+      .icon { fill: #a78bfa; }
+    </style>
+  </defs>
+  <rect class="bg" width="192" height="192" rx="45"/>
+  <g transform="translate(48, 48)" width="96" height="96">
+    <!-- Musical note -->
+    <circle class="icon" cx="30" cy="70" r="8"/>
+    <rect class="icon" x="28" y="10" width="4" height="60"/>
+    <circle class="icon" cx="60" cy="55" r="10"/>
+    <rect class="icon" x="57" y="15" width="4" height="40"/>
+    <!-- Wave form concept -->
+    <path class="icon" d="M 15 45 Q 20 35 25 45 T 35 45" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/>
+  </g>
+</svg>

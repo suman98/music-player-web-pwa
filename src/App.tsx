@@ -10,6 +10,7 @@ import { RecentlyPlayed } from './components/RecentlyPlayed'
 import { YouMightLike } from './components/YouMightLike'
 import { LyricsDisplay } from './components/LyricsDisplay'
 import { TrackList } from './components/TrackList'
+import { InstallPrompt } from './components/InstallPrompt'
 import { getTrackSrc, truncateText } from './utils'
 
 export default function App() {
@@ -359,6 +360,8 @@ export default function App() {
           </div>
         </footer>
       )}
+      {/* Install Prompt */}
+      <InstallPrompt />
       {/* Hidden audio element */}
       <audio ref={audioRef} />
     </div>

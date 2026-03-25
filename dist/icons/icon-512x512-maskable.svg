@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <style>
+      .icon { fill: #a78bfa; }
+    </style>
+  </defs>
+  <!-- Maskable icons should have a 80px safe zone from edge, centered -->
+  <g transform="translate(128, 128)" width="256" height="256">
+    <!-- Musical notes -->
+    <circle class="icon" cx="80" cy="185" r="22"/>
+    <rect class="icon" x="75" y="25" width="10" height="160"/>
+    <circle class="icon" cx="160" cy="145" r="28"/>
+    <rect class="icon" x="152" y="40" width="10" height="105"/>
+    <!-- Wave form concept -->
+    <path class="icon" d="M 40 120 Q 55 90 70 120 T 100 120" fill="none" stroke="#a78bfa" stroke-width="5" stroke-linecap="round"/>
+  </g>
+</svg>
