@@ -1,6 +1,7 @@
+import { useState } from 'react'
 import { AudioTrack } from '@music-library/core'
 import { HiMusicalNote } from 'react-icons/hi2'
-import { MdPlayArrow, MdFavoriteBorder } from 'react-icons/md'
+import { MdPlayArrow, MdFavoriteBorder, MdSearch } from 'react-icons/md'
 import { truncateText, formatTime } from '../utils'
 
 interface TrackListProps {
@@ -22,27 +23,44 @@ export function TrackList({
   duration = 0,
   isMobile,
 }: TrackListProps) {
+  const [searchQuery, setSearchQuery] = useState('')
   const padding = isMobile ? 'p-3' : 'p-4'
   const gap = isMobile ? 'gap-2' : 'gap-2'
   const trackPadding = isMobile ? 'p-2' : 'p-2.5'
   const textTruncate = isMobile ? 18 : 25
   const iconSize = isMobile ? 16 : 20
 
+  const filteredTracks = tracks.filter(
+    (track) =>
+      track.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (track.artist && track.artist.toLowerCase().includes(searchQuery.toLowerCase()))
+  )
+
   return (
     <div className={`glass-sm ${padding} flex-1 flex flex-col`}>
-      <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-2 flex-shrink-0">Playlist</h3>
+      {/* Search input */}
+      <div className="flex items-center gap-2 mb-3 px-3 py-2 bg-white/5 rounded-lg flex-shrink-0">
+        <MdSearch size={18} className="opacity-60" />
+        <input
+          type="text"
+          placeholder="Search tracks..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="flex-1 bg-transparent text-xs sm:text-sm outline-none placeholder-white/40 text-white"
+        />
+      </div>
 
       <div className={`flex-1 min-h-0 overflow-y-auto space-y-0 pr-2 -mx-2`}>
-        {tracks.length === 0 ? (
+        {filteredTracks.length === 0 ? (
           <div className="flex items-center justify-center h-full opacity-40">
             <div className="text-center">
               <HiMusicalNote size={40} className="mx-auto mb-2" />
-              <p className="text-xs sm:text-sm">No tracks loaded</p>
-              <p className="text-xs opacity-60 mt-1">Select a folder to load music</p>
+              <p className="text-xs sm:text-sm">{searchQuery ? 'No matches found' : 'No tracks loaded'}</p>
+              <p className="text-xs opacity-60 mt-1">{searchQuery ? 'Try a different search' : 'Select a folder to load music'}</p>
             </div>
           </div>
         ) : (
-          [...tracks, ...tracks, ...tracks, ...tracks, ...tracks, ...tracks ,...tracks, ...tracks].map((track, idx) => (
+          [...filteredTracks, ...filteredTracks, ...filteredTracks, ...filteredTracks, ...filteredTracks, ...filteredTracks ,...filteredTracks, ...filteredTracks].map((track, idx) => (
             <button
               key={idx}
               onClick={() => onTrackClick(track)}
