@@ -14,13 +14,13 @@ export function LyricsDisplay({ track, isMobile }: LyricsDisplayProps) {
   const coverSize = isMobile ? 'h-32' : 'h-48'
 
   return (
-    <div className={`glass ${padding} flex flex-col ${isMobile ? 'gap-2' : 'gap-3'} h-full rounded-2xl shadow-lg border border-white/10`}>
+    <div className={`glass ${padding} flex flex-col ${isMobile ? 'gap-2' : 'gap-3'} h-full rounded-lg shadow-lg border border-white/10`}>
       <h3 className={`${headingTextSize} font-bold bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent`}>Details</h3>
 
       {track ? (
-        <div className="flex-1 overflow-y-auto flex flex-col gap-3 sm:gap-4 pr-2">
+        <div className="flex-1 overflow-hidden flex flex-col gap-3 sm:gap-4 pr-2">
           {/* Album cover placeholder */}
-          <div className={`w-full ${coverSize} rounded-2xl bg-gradient-to-br from-pink-500/20 to-purple-600/20 flex items-center justify-center border border-white/10 shadow-lg hover:shadow-xl transition-all`}>
+          <div className={`w-full ${coverSize} rounded-lg bg-gradient-to-br from-pink-500/20 to-purple-600/20 flex items-center justify-center border border-white/10 shadow-lg hover:shadow-xl transition-all`}>
             <HiMusicalNote size={isMobile ? 40 : 60} className="opacity-40" />
           </div>
 

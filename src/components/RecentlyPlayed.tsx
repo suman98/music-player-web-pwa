@@ -22,18 +22,18 @@ export function RecentlyPlayed({
   const textArtistTruncate = isMobile ? 12 : 15
 
   return (
-    <div className={`glass ${padding} flex flex-col ${gap} rounded-2xl shadow-lg border border-white/10`}>
+    <div className={`glass ${padding} flex flex-col ${gap} rounded-lg shadow-lg border border-white/10`}>
       <div className="flex items-center justify-between">
         <h3 className="text-base sm:text-lg font-bold bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">Recently Played</h3>
         <HiChevronRight size={20} className="opacity-60" />
       </div>
 
-      <div className={`flex ${isMobile ? 'gap-2' : 'gap-3'} overflow-x-auto sm:overflow-visible pb-2 sm:pb-0`}>
+      <div className={`flex ${isMobile ? 'gap-2' : 'gap-3'} overflow-hidden sm:overflow-visible pb-2 sm:pb-0`}>
         {displayTracks.map((track, idx) => (
           <button
             key={idx}
             onClick={() => onTrackClick(track)}
-            className={`relative flex-shrink-0 ${isMobile ? 'w-28' : 'flex-1'} rounded-xl p-2 sm:p-3 text-left transition-all duration-300 group shadow-md hover:shadow-lg ${
+            className={`relative flex-shrink-0 ${isMobile ? 'w-28' : 'flex-1'} rounded-lg p-2 sm:p-3 text-left transition-all duration-300 group shadow-md hover:shadow-lg ${
               currentTrack?.name === track.name
                 ? 'glass-sm ring-2 ring-purple-500 scale-105'
                 : 'glass-sm hover:bg-white/15 hover:scale-105'

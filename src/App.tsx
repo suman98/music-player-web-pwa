@@ -34,6 +34,10 @@ export default function App() {
           autoRestoreLast: true,
         })
         setLibrary(musicLib)
+        // Load tracks from auto-restored folder if available
+        if (musicLib.tracks && musicLib.tracks.length > 0) {
+          setTracks(musicLib.tracks)
+        }
       } catch (err) {
         console.error('Failed to initialize library:', err)
         setError('Failed to initialize music library')
@@ -203,8 +207,8 @@ export default function App() {
             )}
           </div>
           {isPlaying && currentTrack && (
-            <div className="hidden sm:flex items-center gap-2 ml-4 px-4 py-2 rounded-full glass-sm border border-green-500/30 bg-green-500/10">
-              <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+            <div className="hidden sm:flex items-center gap-2 ml-4 px-4 py-2 rounded-lg glass-sm border border-green-500/30 bg-green-500/10">
+              <div className="w-1.5 h-1.5 bg-green-400 animate-pulse" />
               <span className="text-xs text-green-300 font-medium truncate max-w-xs hidden md:inline">{currentTrack.name}</span>
             </div>
           )}
@@ -212,7 +216,7 @@ export default function App() {
         <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           <button
             onClick={() => setAutoplay(!autoplay)}
-            className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 rounded-full font-semibold transition-all duration-300 text-xs sm:text-sm flex-shrink-0 shadow-lg hover:shadow-xl scale-95 hover:scale-100 ${
+            className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg font-semibold transition-all duration-300 text-xs sm:text-sm flex-shrink-0 shadow-lg hover:shadow-xl scale-95 hover:scale-100 ${
               autoplay
                 ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700'
                 : 'bg-white/10 hover:bg-white/20'
@@ -225,7 +229,7 @@ export default function App() {
           <button
             onClick={handleLoadFolder}
             disabled={!library || isLoading}
-            className="flex items-center gap-1 sm:gap-2 px-4 sm:px-6 py-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 rounded-full font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm flex-shrink-0 shadow-lg hover:shadow-xl scale-95 hover:scale-100"
+            className="flex items-center gap-1 sm:gap-2 px-4 sm:px-6 py-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 rounded-lg font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm flex-shrink-0 shadow-lg hover:shadow-xl scale-95 hover:scale-100"
           >
             <MdFolderOpen size={18} className="sm:inline" />
             <span className="hidden sm:inline">{isLoading ? 'Loading...' : 'Load Music'}</span>
@@ -240,10 +244,10 @@ export default function App() {
         </div>
       )}
 
-      {/* Main content - Mobile first responsive */}
-      <div className="flex-1 overflow-hidden flex flex-col lg:flex-row gap-3 sm:gap-4 p-2 sm:p-4">
+      {/* Main content - With padding for fixed footer */}
+      <div className="flex-1 overflow-hidden flex flex-col lg:flex-row gap-3 sm:gap-4 p-2 sm:p-4 pb-24 sm:pb-28">
         {/* Left sidebar - Hidden on mobile, visible on lg+ */}
-        <div className="hidden lg:flex lg:w-80 lg:flex-col lg:gap-6 lg:overflow-y-auto">
+        <div className="hidden lg:flex lg:w-80 lg:flex-col lg:gap-6 lg:overflow-hidden">
           <RecentlyPlayed
             tracks={tracks.slice(0, 5)}
             onTrackClick={handleTrackClick}
@@ -258,69 +262,16 @@ export default function App() {
         </div>
 
         {/* Center panel - Main responsive content */}
-        <div className="flex-1 flex flex-col gap-2 sm:gap-4 min-w-0 overflow-y-auto lg:overflow-visible">
-          {/* Player bar - Always visible on mobile */}
-          {currentTrack && (
-            <div className="lg:hidden glass p-2 sm:p-3 flex flex-col gap-2 flex-shrink-0 shadow-lg rounded-2xl border border-white/10">
-              <div className="flex items-center gap-3">
-                {isPlaying && <MdPlayArrow size={16} className="text-green-400 animate-pulse" />}
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs sm:text-sm font-semibold truncate">{currentTrack.name}</p>
-                  <p className="text-xs opacity-60 truncate">{currentTrack.artist || 'Unknown'}</p>
-                </div>
-              </div>
-              <ProgressBar
-                currentTime={currentTime}
-                duration={duration}
-                onSeek={handleSeek}
-              />
-              <div className="flex gap-1.5">
-                <button
-                  onClick={handlePrevious}
-                  className="flex-1 px-2 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-all duration-200 text-xs font-medium flex items-center justify-center"
-                >
-                  <MdSkipPrevious size={18} />
-                </button>
-                <button
-                  onClick={handlePlayPause}
-                  className="flex-1 px-2 py-2 rounded-lg bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 transition-all duration-200 text-xs font-semibold shadow-lg flex items-center justify-center"
-                >
-                  {isPlaying ? <MdPause size={20} /> : <MdPlayArrow size={20} />}
-                </button>
-                <button
-                  onClick={handleNext}
-                  className="flex-1 px-2 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-all duration-200 text-xs font-medium flex items-center justify-center"
-                >
-                  <MdSkipNext size={18} />
-                </button>
-              </div>
-            </div>
-          )}
-
+        <div className="flex-1 flex flex-col gap-2 sm:gap-4 min-w-0 overflow-hidden lg:overflow-visible">
           {/* Desktop: Show player above playlist */}
           {currentTrack && (
             <div className="hidden lg:block">
               <CurrentlyPlaying track={currentTrack} isPlaying={isPlaying} />
-              <div className="glass p-4 flex flex-col gap-3 mt-4">
-                <ProgressBar
-                  currentTime={currentTime}
-                  duration={duration}
-                  onSeek={handleSeek}
-                />
-                <PlayerControls
-                  isPlaying={isPlaying}
-                  onPlayPause={handlePlayPause}
-                  onPrevious={handlePrevious}
-                  onNext={handleNext}
-                  onVolumeChange={setVolume}
-                  volume={volume}
-                />
-              </div>
             </div>
           )}
 
           {/* Playlist view */}
-          <div className="flex-1 min-h-0">
+          <div className="flex-1 min-h-0 -m-2 sm:-m-4 lg:m-0 overflow-y-auto">
             <TrackList
               tracks={tracks}
               onTrackClick={handleTrackClick}
@@ -333,7 +284,7 @@ export default function App() {
           </div>
 
           {/* Desktop: Show playlist below player */}
-          <div className="hidden lg:flex lg:flex-1 lg:min-h-0">
+          <div className="hidden lg:flex lg:flex-1 lg:min-h-0 lg:-mx-4">
             <TrackList
               tracks={tracks}
               onTrackClick={handleTrackClick}
@@ -346,11 +297,31 @@ export default function App() {
         </div>
 
         {/* Right sidebar - Hidden on mobile, visible on lg+ */}
-        <div className="hidden lg:block lg:w-80 lg:min-h-0 lg:overflow-y-auto">
+        <div className="hidden lg:block lg:w-80 lg:min-h-0 lg:overflow-hidden">
           <LyricsDisplay track={currentTrack} />
         </div>
       </div>
-
+      {/* Fixed Footer - Player Controls */}
+      {currentTrack && (
+        <footer className="fixed bottom-0 left-0 right-0 glass border-t border-white/10 px-3 sm:px-6 py-2 sm:py-3 shadow-2xl">
+          <div className="max-w-full mx-auto flex flex-col gap-2">
+            <ProgressBar
+              currentTime={currentTime}
+              duration={duration}
+              onSeek={handleSeek}
+            />
+            <PlayerControls
+              isPlaying={isPlaying}
+              onPlayPause={handlePlayPause}
+              onPrevious={handlePrevious}
+              onNext={handleNext}
+              onVolumeChange={setVolume}
+              volume={volume}
+              isMobile
+            />
+          </div>
+        </footer>
+      )}
       {/* Hidden audio element */}
       <audio ref={audioRef} />
     </div>

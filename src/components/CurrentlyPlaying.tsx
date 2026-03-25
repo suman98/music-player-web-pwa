@@ -14,10 +14,10 @@ export function CurrentlyPlaying({ track, isPlaying, isMobile }: CurrentlyPlayin
   const padding = isMobile ? 'p-3' : 'p-4'
 
   return (
-    <div className={`glass ${padding} flex flex-col items-center gap-3 sm:gap-4 flex-shrink-0 rounded-3xl shadow-xl border border-white/10`}>
+    <div className={`glass ${padding} flex flex-col items-center gap-3 sm:gap-4 flex-shrink-0 rounded-lg shadow-xl border border-white/10`}>
       {/* Album/Cover */}
       <div className={`relative ${coverSize}`}>
-        <div className={`w-full h-full rounded-full bg-gradient-to-br from-pink-500/40 to-purple-600/40 backdrop-blur-md flex items-center justify-center border-4 border-white/30 shadow-2xl`}>
+        <div className={`w-full h-full bg-gradient-to-br from-pink-500/40 to-purple-600/40 backdrop-blur-md flex items-center justify-center border-4 border-white/30 shadow-2xl`}>
           {track ? (
             <div className="text-4xl sm:text-6xl opacity-90">♪</div>
           ) : (
@@ -26,8 +26,8 @@ export function CurrentlyPlaying({ track, isPlaying, isMobile }: CurrentlyPlayin
         </div>
         {isPlaying && (
           <>
-            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-pink-400 border-r-purple-400 animate-spin" />
-            <div className="absolute inset-1 rounded-full border-2 border-transparent border-b-pink-400 border-l-purple-400 animate-spin-slow" style={{ animationDirection: 'reverse' }} />
+            <div className="absolute inset-0 border-4 border-transparent border-t-pink-400 border-r-purple-400 animate-spin" />
+            <div className="absolute inset-1 border-2 border-transparent border-b-pink-400 border-l-purple-400 animate-spin-slow" style={{ animationDirection: 'reverse' }} />
           </>
         )}
       </div>
