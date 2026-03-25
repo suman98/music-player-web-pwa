@@ -11,7 +11,10 @@ export default defineConfig({
       '@music-library/core': '@music-library/core/dist/index.js',
     },
   },
+  optimizeDeps: {
+    include: ['@music-library/core'],
+  },
   ssr: {
-    noExternal: ['@music-library/core'],
+    noExternal: [],
   },
 })
