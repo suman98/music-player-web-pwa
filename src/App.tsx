@@ -10,7 +10,7 @@ import { RecentlyPlayed } from './components/RecentlyPlayed'
 import { YouMightLike } from './components/YouMightLike'
 import { LyricsDisplay } from './components/LyricsDisplay'
 import { TrackList } from './components/TrackList'
-import { getTrackSrc } from './utils'
+import { getTrackSrc, truncateText } from './utils'
 
 export default function App() {
   const [library, setLibrary] = useState<MusicLibrary | null>(null)
@@ -195,45 +195,38 @@ export default function App() {
   return (
     <div className="w-screen h-screen overflow-hidden bg-gradient-dark flex flex-col">
       {/* Header */}
-      <header className="glass border-b border-white/10 px-4 sm:px-6 md:px-8 py-4 sm:py-5 flex items-center justify-between flex-shrink-0 shadow-lg">
-        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-          <div className="p-2 rounded-lg bg-gradient-to-br from-pink-500 to-purple-600 shadow-lg">
-            <HiMusicalNote size={24} className="text-white" />
+      <header className="glass border-b border-white/10 px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 flex items-center justify-between flex-shrink-0 shadow-lg">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="p-1.5 rounded-lg bg-gradient-to-br from-pink-500 to-purple-600">
+            <HiMusicalNote size={20} className="text-white" />
           </div>
-          <div>
-            <h1 className="text-lg sm:text-xl md:text-2xl font-bold truncate">Music Player</h1>
+          <div className="min-w-0">
+            <h1 className="text-base sm:text-lg font-bold truncate">Music Player</h1>
             {isPlaying && currentTrack && (
-              <p className="text-xs text-green-400 font-medium truncate">▶ Now Playing</p>
+              <p className="text-xs text-green-400 font-medium truncate">▶ {truncateText(currentTrack.name, 20)}</p>
             )}
           </div>
-          {isPlaying && currentTrack && (
-            <div className="hidden sm:flex items-center gap-2 ml-4 px-4 py-2 rounded-lg glass-sm border border-green-500/30 bg-green-500/10">
-              <div className="w-1.5 h-1.5 bg-green-400 animate-pulse" />
-              <span className="text-xs text-green-300 font-medium truncate max-w-xs hidden md:inline">{currentTrack.name}</span>
-            </div>
-          )}
         </div>
         <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           <button
             onClick={() => setAutoplay(!autoplay)}
-            className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg font-semibold transition-all duration-300 text-xs sm:text-sm flex-shrink-0 shadow-lg hover:shadow-xl scale-95 hover:scale-100 ${
+            className={`flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg font-semibold transition-all duration-300 text-xs flex-shrink-0 hover:shadow-lg ${
               autoplay
                 ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700'
                 : 'bg-white/10 hover:bg-white/20'
             }`}
             title={autoplay ? 'Autoplay enabled' : 'Autoplay disabled'}
           >
-            <span className="text-base">🔁</span>
+            <span>🔁</span>
             <span className="hidden sm:inline">{autoplay ? 'Auto' : 'Manual'}</span>
           </button>
           <button
             onClick={handleLoadFolder}
             disabled={!library || isLoading}
-            className="flex items-center gap-1 sm:gap-2 px-4 sm:px-6 py-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 rounded-lg font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm flex-shrink-0 shadow-lg hover:shadow-xl scale-95 hover:scale-100"
+            className="flex items-center gap-1 px-4 py-1.5 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 rounded-lg font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-xs flex-shrink-0 hover:shadow-lg"
           >
-            <MdFolderOpen size={18} className="sm:inline" />
-            <span className="hidden sm:inline">{isLoading ? 'Loading...' : 'Load Music'}</span>
-            <span className="sm:hidden">{isLoading ? '...' : 'Load'}</span>
+            <MdFolderOpen size={16} />
+            <span className="hidden sm:inline">{isLoading ? 'Loading...' : 'Load'}</span>
           </button>
         </div>
       </header>
