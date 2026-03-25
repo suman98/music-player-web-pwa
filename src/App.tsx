@@ -15,6 +15,7 @@ import { getTrackSrc, truncateText } from './utils'
 export default function App() {
   const [library, setLibrary] = useState<MusicLibrary | null>(null)
   const [tracks, setTracks] = useState<AudioTrack[]>([])
+  const [sortedTracks, setSortedTracks] = useState<AudioTrack[]>([])
   const [currentTrackIndex, setCurrentTrackIndex] = useState<number | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
@@ -24,6 +25,21 @@ export default function App() {
   const [autoplay, setAutoplay] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
+
+  // Load sorted tracks from localStorage
+  useEffect(() => {
+    const savedSortOrder = localStorage.getItem('trackSortOrder')
+    if (savedSortOrder) {
+      try {
+        const sortedIndices = JSON.parse(savedSortOrder)
+        if (Array.isArray(sortedIndices)) {
+          setSortedTracks(sortedIndices.map((idx) => tracks[idx]).filter(Boolean))
+        }
+      } catch (err) {
+        console.error('Failed to load sort order:', err)
+      }
+    }
+  }, [])
 
   // Initialize library
   useEffect(() => {
@@ -37,6 +53,23 @@ export default function App() {
         // Load tracks from auto-restored folder if available
         if (musicLib.tracks && musicLib.tracks.length > 0) {
           setTracks(musicLib.tracks)
+          // Check if we have a saved sort order
+          const savedSortOrder = localStorage.getItem('trackSortOrder')
+          if (savedSortOrder) {
+            try {
+              const sortedIndices = JSON.parse(savedSortOrder)
+              if (Array.isArray(sortedIndices) && sortedIndices.length === musicLib.tracks.length) {
+                const sorted = sortedIndices.map((idx: number) => musicLib.tracks[idx])
+                setSortedTracks(sorted)
+              } else {
+                setSortedTracks(musicLib.tracks)
+              }
+            } catch (err) {
+              setSortedTracks(musicLib.tracks)
+            }
+          } else {
+            setSortedTracks(musicLib.tracks)
+          }
         }
       } catch (err) {
         console.error('Failed to initialize library:', err)
@@ -127,6 +160,8 @@ export default function App() {
     try {
       const loadedTracks = await library.load()
       setTracks(loadedTracks)
+      setSortedTracks(loadedTracks)
+      localStorage.removeItem('trackSortOrder')
       if (loadedTracks.length > 0) {
         setCurrentTrackIndex(0)
       }
@@ -136,6 +171,13 @@ export default function App() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleTracksReorder = (reorderedTracks: AudioTrack[]) => {
+    setSortedTracks(reorderedTracks)
+    // Save the sort order as indices
+    const sortOrder = reorderedTracks.map((track) => tracks.findIndex((t) => t.name === track.name && t.artist === track.artist))
+    localStorage.setItem('trackSortOrder', JSON.stringify(sortOrder))
   }
 
   const handlePlayPause = () => {
@@ -266,8 +308,9 @@ export default function App() {
           {/* Playlist view */}
           <div className="flex-1 min-h-0 overflow-y-auto">
             <TrackList
-              tracks={tracks}
+              tracks={sortedTracks}
               onTrackClick={handleTrackClick}
+              onTracksReorder={handleTracksReorder}
               currentTrack={currentTrack}
               isPlaying={isPlaying}
               currentTime={currentTime}
@@ -279,8 +322,9 @@ export default function App() {
           {/* Desktop: Show playlist below player */}
           <div className="hidden lg:flex lg:flex-1 lg:min-h-0 lg:-mx-4">
             <TrackList
-              tracks={tracks}
+              tracks={sortedTracks}
               onTrackClick={handleTrackClick}
+              onTracksReorder={handleTracksReorder}
               currentTrack={currentTrack}
               isPlaying={isPlaying}
               currentTime={currentTime}
