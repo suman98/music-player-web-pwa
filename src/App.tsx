@@ -247,7 +247,7 @@ export default function App() {
   const handleYouTubeDownload = async (url: string) => {
     setIsDownloading(true)
     try {
-      const response = await fetch('http://localhost:8000/download-youtube', {
+      const response = await fetch('https://music.talktosumanthapa.com/download-youtube', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
