@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { createMusicLibrary, MusicLibrary, AudioTrack } from '@music-library/core'
 import { MdFolderOpen, MdPlayArrow, MdPause, MdSkipNext, MdSkipPrevious, MdLightMode, MdDarkMode } from 'react-icons/md'
 import { HiMusicalNote } from 'react-icons/hi2'
+import { FaYoutube } from 'react-icons/fa'
 
 import { CurrentlyPlaying } from './components/CurrentlyPlaying'
 import { PlayerControls } from './components/PlayerControls'
@@ -11,6 +12,7 @@ import { YouMightLike } from './components/YouMightLike'
 import { LyricsDisplay } from './components/LyricsDisplay'
 import { TrackList } from './components/TrackList'
 import { InstallPrompt } from './components/InstallPrompt'
+import { YouTubeModal } from './components/YouTubeModal'
 import { getTrackSrc, truncateText } from './utils'
 import { updateMediaSession, registerMediaSessionHandlers, clearMediaSession } from './utils/mediaSession'
 import { useTheme } from './contexts/ThemeContext'
@@ -28,6 +30,8 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true)
   const [autoplay, setAutoplay] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isYouTubeModalOpen, setIsYouTubeModalOpen] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
   // Load sorted tracks from localStorage
@@ -240,6 +244,67 @@ export default function App() {
     }
   }
 
+  const handleYouTubeDownload = async (url: string) => {
+    setIsDownloading(true)
+    try {
+      const response = await fetch('http://localhost:8000/download-youtube', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url }),
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(errorText || 'Download failed')
+      }
+
+      // Get the filename from the response headers
+      const contentDisposition = response.headers.get('content-disposition')
+      console.log('Content-Disposition header:', contentDisposition)
+      
+      let filename = 'test-audio.mp3'
+      
+      if (contentDisposition) {
+        // Try multiple regex patterns to extract filename
+        let filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/)
+        if (!filenameMatch) {
+          filenameMatch = contentDisposition.match(/filename\*=UTF-8''(.+)/)
+        }
+        if (!filenameMatch) {
+          filenameMatch = contentDisposition.match(/filename=([^;]+)/)
+        }
+        
+        if (filenameMatch) {
+          filename = filenameMatch[1]
+          // Remove quotes if present
+          filename = filename.replace(/^"|"$/g, '')
+          console.log('Extracted filename:', filename)
+        }
+      }
+
+      // Convert response to blob and download
+      const blob = await response.blob()
+      const downloadUrl = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = downloadUrl
+      a.download = filename
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      window.URL.revokeObjectURL(downloadUrl)
+
+      setIsYouTubeModalOpen(false)
+      setError(null)
+    } catch (err) {
+      console.error('YouTube download error:', err)
+      setError('Failed to download video. Please check the server is running.')
+    } finally {
+      setIsDownloading(false)
+    }
+  }
+
   // Register media session handlers for lock screen controls
   useEffect(() => {
     registerMediaSessionHandlers({
@@ -299,6 +364,13 @@ export default function App() {
           </div>
         </div>
         <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+          <button
+            onClick={() => setIsYouTubeModalOpen(true)}
+            className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-red-500 hover:bg-red-600 transition-all duration-300 shadow-md hover:shadow-lg"
+            title="Download YouTube video as MP3"
+          >
+            <FaYoutube size={20} className="text-white" />
+          </button>
           <button
             onClick={toggleTheme}
             className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gray-200 dark:bg-white/10 hover:bg-gray-300 dark:hover:bg-white/20 transition-all duration-300 shadow-md hover:shadow-lg"
@@ -417,6 +489,13 @@ export default function App() {
       )}
       {/* Install Prompt */}
       <InstallPrompt />
+      {/* YouTube Modal */}
+      <YouTubeModal
+        isOpen={isYouTubeModalOpen}
+        onClose={() => setIsYouTubeModalOpen(false)}
+        onDownload={handleYouTubeDownload}
+        isLoading={isDownloading}
+      />
       {/* Hidden audio element */}
       <audio ref={audioRef} />
     </div>
