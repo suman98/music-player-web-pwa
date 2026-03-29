@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -18,6 +19,7 @@ export default {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-dark': 'linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%)',
+        'gradient-light': 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
       },
       keyframes: {
         slideUp: {

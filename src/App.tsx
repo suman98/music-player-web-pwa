@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { createMusicLibrary, MusicLibrary, AudioTrack } from '@music-library/core'
-import { MdFolderOpen, MdPlayArrow, MdPause, MdSkipNext, MdSkipPrevious } from 'react-icons/md'
+import { MdFolderOpen, MdPlayArrow, MdPause, MdSkipNext, MdSkipPrevious, MdLightMode, MdDarkMode } from 'react-icons/md'
 import { HiMusicalNote } from 'react-icons/hi2'
 
 import { CurrentlyPlaying } from './components/CurrentlyPlaying'
@@ -13,8 +13,10 @@ import { TrackList } from './components/TrackList'
 import { InstallPrompt } from './components/InstallPrompt'
 import { getTrackSrc, truncateText } from './utils'
 import { updateMediaSession, registerMediaSessionHandlers, clearMediaSession } from './utils/mediaSession'
+import { useTheme } from './contexts/ThemeContext'
 
 export default function App() {
+  const { theme, toggleTheme } = useTheme()
   const [library, setLibrary] = useState<MusicLibrary | null>(null)
   const [tracks, setTracks] = useState<AudioTrack[]>([])
   const [sortedTracks, setSortedTracks] = useState<AudioTrack[]>([])
@@ -97,12 +99,27 @@ export default function App() {
       const track = tracks[currentTrackIndex]
       if (audioRef.current) {
         audioRef.current.src = getTrackSrc(track)
-        if (isPlaying) {
-          audioRef.current.play().catch(console.error)
-        }
       }
     }
   }, [currentTrackIndex, tracks])
+
+  // Handle play/pause state changes - dedicated effect for audio playback
+  useEffect(() => {
+    if (!audioRef.current) return
+
+    if (isPlaying) {
+      // Attempt to play audio
+      const playPromise = audioRef.current.play()
+      if (playPromise !== undefined) {
+        playPromise.catch((error) => {
+          console.log('[Audio] Play command issued but may need user interaction:', error)
+        })
+      }
+    } else {
+      // Pause audio
+      audioRef.current.pause()
+    }
+  }, [isPlaying])
 
   // Update volume
   useEffect(() => {
@@ -257,37 +274,44 @@ export default function App() {
 
   if (isLoading && !library) {
     return (
-      <div className="w-screen h-screen flex items-center justify-center bg-gradient-dark">
+      <div className="w-screen h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-[#1a1a2e] dark:to-[#0f0f1e]">
         <div className="text-center">
           <HiMusicalNote size={64} className="mx-auto mb-4 text-purple-500 animate-bounce" />
-          <p className="text-xl text-white">Loading Music Library...</p>
+          <p className="text-xl text-gray-800 dark:text-white">Loading Music Library...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-gradient-dark flex flex-col">
+    <div className="w-screen h-screen overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 dark:from-[#1a1a2e] dark:to-[#0f0f1e] flex flex-col transition-colors duration-300">
       {/* Header */}
-      <header className="glass border-b border-white/10 px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 flex items-center justify-between flex-shrink-0 shadow-lg">
-        <div className="flex items-center gap-2 min-w-0">
-          <div className="p-1.5 rounded-lg bg-gradient-to-br from-pink-500 to-purple-600">
-            <HiMusicalNote size={20} className="text-white" />
+      <header className="glass border-b border-gray-200 dark:border-white/10 px-4 sm:px-6 md:px-8 py-3 sm:py-4 flex items-center justify-between flex-shrink-0">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <div className="p-2 rounded-xl bg-gradient-to-br from-pink-500 to-purple-600 shadow-lg">
+            <HiMusicalNote size={24} className="text-white" />
           </div>
           <div className="min-w-0">
-            <h1 className="text-base sm:text-lg font-bold truncate">Music Player</h1>
+            <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white truncate">Music Player</h1>
             {isPlaying && currentTrack && (
-              <p className="text-xs text-green-400 font-medium truncate">▶ {truncateText(currentTrack.name, 20)}</p>
+              <p className="text-xs text-green-500 dark:text-green-400 font-medium truncate">▶ {truncateText(currentTrack.name, 20)}</p>
             )}
           </div>
         </div>
         <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           <button
+            onClick={toggleTheme}
+            className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gray-200 dark:bg-white/10 hover:bg-gray-300 dark:hover:bg-white/20 transition-all duration-300 shadow-md hover:shadow-lg"
+            title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+          >
+            {theme === 'dark' ? <MdLightMode size={20} className="text-yellow-400" /> : <MdDarkMode size={20} className="text-gray-700" />}
+          </button>
+          <button
             onClick={() => setAutoplay(!autoplay)}
-            className={`flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg font-semibold transition-all duration-300 text-xs flex-shrink-0 hover:shadow-lg ${
+            className={`flex items-center justify-center gap-1 px-3 py-2 rounded-xl font-semibold transition-all duration-300 text-xs flex-shrink-0 shadow-md hover:shadow-lg ${
               autoplay
-                ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700'
-                : 'bg-white/10 hover:bg-white/20'
+                ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white'
+                : 'bg-gray-200 dark:bg-white/10 hover:bg-gray-300 dark:hover:bg-white/20 text-gray-700 dark:text-white'
             }`}
             title={autoplay ? 'Autoplay enabled' : 'Autoplay disabled'}
           >
@@ -297,24 +321,24 @@ export default function App() {
           <button
             onClick={handleLoadFolder}
             disabled={!library || isLoading}
-            className="flex items-center gap-1 px-4 py-1.5 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 rounded-lg font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-xs flex-shrink-0 hover:shadow-lg"
+            className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-xs text-white flex-shrink-0 shadow-md hover:shadow-lg"
           >
-            <MdFolderOpen size={16} />
+            <MdFolderOpen size={18} />
             <span className="hidden sm:inline">{isLoading ? 'Loading...' : 'Load'}</span>
           </button>
         </div>
       </header>
 
       {error && (
-        <div className="bg-red-500/20 border border-red-500/50 text-red-200 px-4 sm:px-8 py-2 sm:py-3 text-xs sm:text-sm flex-shrink-0">
+        <div className="bg-red-100 dark:bg-red-500/20 border border-red-300 dark:border-red-500/50 text-red-700 dark:text-red-200 px-4 sm:px-8 py-2 sm:py-3 text-xs sm:text-sm flex-shrink-0">
           {error}
         </div>
       )}
 
       {/* Main content - With padding for fixed footer */}
-      <div className={`flex-1 overflow-hidden flex flex-col lg:flex-row gap-3 sm:gap-4 p-2 sm:p-4 ${currentTrack ? 'pb-24 sm:pb-28' : ''}`}>
+      <div className={`flex-1 overflow-hidden flex flex-col lg:flex-row gap-4 sm:gap-5 p-3 sm:p-5 ${currentTrack ? 'pb-28 sm:pb-32' : ''}`}>
         {/* Left sidebar - Hidden on mobile, visible on lg+ */}
-        <div className="hidden lg:flex lg:w-80 lg:flex-col lg:gap-6 lg:overflow-hidden">
+        <div className="hidden lg:flex lg:w-80 lg:flex-col lg:gap-5 lg:overflow-hidden">
           <RecentlyPlayed
             tracks={tracks.slice(0, 5)}
             onTrackClick={handleTrackClick}
@@ -329,7 +353,7 @@ export default function App() {
         </div>
 
         {/* Center panel - Main responsive content */}
-        <div className="flex-1 flex flex-col gap-2 sm:gap-4 min-w-0 min-h-0 lg:overflow-visible">
+        <div className="flex-1 flex flex-col gap-3 sm:gap-4 min-w-0 min-h-0 lg:overflow-visible">
           {/* Desktop: Show player above playlist */}
           {currentTrack && (
             <div className="hidden lg:block">
@@ -372,8 +396,8 @@ export default function App() {
       </div>
       {/* Fixed Footer - Player Controls */}
       {currentTrack && (
-        <footer className="fixed bottom-0 left-0 right-0 glass border-t border-white/10 px-3 sm:px-6 py-2 sm:py-3 shadow-2xl">
-          <div className="max-w-full mx-auto flex flex-col gap-2">
+        <footer className="fixed bottom-0 left-0 right-0 glass border-t border-gray-200 dark:border-white/10 px-4 sm:px-6 py-3 sm:py-4 shadow-2xl backdrop-blur-xl">
+          <div className="max-w-full mx-auto flex flex-col gap-2.5">
             <ProgressBar
               currentTime={currentTime}
               duration={duration}

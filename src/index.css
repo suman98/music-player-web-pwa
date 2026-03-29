@@ -7,29 +7,33 @@
 }
 
 html {
-  @apply bg-[#0f0f1e] text-white;
+  @apply bg-gray-50 dark:bg-[#0f0f1e] text-gray-900 dark:text-white;
 }
 
 body {
   @apply font-sans antialiased;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+.dark body {
   background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
 }
 
 /* Utility classes for common patterns */
 .glass {
-  @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl;
+  @apply bg-white/90 dark:bg-white/10 backdrop-blur-md border border-gray-200 dark:border-white/20 rounded-2xl shadow-lg;
 }
 
 .glass-sm {
-  @apply bg-white/5 backdrop-blur-sm border border-white/10;
+  @apply bg-white/80 dark:bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-white/10 shadow-md;
 }
 
 .btn-icon {
-  @apply w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-all duration-200 text-sm;
+  @apply w-10 h-10 rounded-xl bg-gray-200 dark:bg-white/10 flex items-center justify-center hover:bg-gray-300 dark:hover:bg-white/20 transition-all duration-200 text-sm shadow-md hover:shadow-lg;
 }
 
 .btn-icon-lg {
-  @apply w-12 h-12 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-all duration-200;
+  @apply w-12 h-12 rounded-xl bg-gray-200 dark:bg-white/10 flex items-center justify-center hover:bg-gray-300 dark:hover:bg-white/20 transition-all duration-200 shadow-md hover:shadow-lg;
 }
 
 .waveform {
@@ -57,21 +61,25 @@ body {
   }
 }
 
+/* Smooth transitions for theme changes */
+* {
+  @apply transition-colors duration-300;
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  @apply bg-gray-100 dark:bg-transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(168, 85, 247, 0.3);
-  border-radius: 3px;
+  @apply bg-gray-300 dark:bg-purple-500/30 rounded;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(168, 85, 247, 0.5);
+  @apply bg-gray-400 dark:bg-purple-500/50;
 }

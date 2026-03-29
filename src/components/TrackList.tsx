@@ -74,25 +74,25 @@ export function TrackList({
   }
 
   return (
-    <div className={`glass-sm ${padding} flex-1 flex flex-col`}>
+    <div className={`glass-sm ${padding} flex-1 flex flex-col rounded-2xl`}>
       {/* Search input */}
-      <div className="flex items-center gap-2 mb-3 px-3 py-2 bg-white/5 rounded-lg flex-shrink-0">
-        <MdSearch size={18} className="opacity-60" />
+      <div className="flex items-center gap-2 mb-3 px-3 py-2.5 bg-gray-100 dark:bg-white/5 rounded-xl flex-shrink-0 shadow-sm">
+        <MdSearch size={20} className="text-gray-500 dark:text-white/60" />
         <input
           type="text"
           placeholder="Search tracks..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="flex-1 bg-transparent text-xs sm:text-sm outline-none placeholder-white/40 text-white"
+          className="flex-1 bg-transparent text-xs sm:text-sm outline-none placeholder-gray-400 dark:placeholder-white/40 text-gray-900 dark:text-white"
         />
       </div>
 
-      <div className={`flex-1 min-h-0 overflow-y-auto space-y-0 pr-2 -mx-2`}>
+      <div className={`flex-1 min-h-0 overflow-y-auto space-y-1 pr-2 -mx-2`}>
         {filteredTracks.length === 0 ? (
-          <div className="flex items-center justify-center h-full opacity-40">
+          <div className="flex items-center justify-center h-full text-gray-400 dark:text-white/40">
             <div className="text-center">
-              <HiMusicalNote size={40} className="mx-auto mb-2" />
-              <p className="text-xs sm:text-sm">{searchQuery ? 'No matches found' : 'No tracks loaded'}</p>
+              <HiMusicalNote size={48} className="mx-auto mb-3" />
+              <p className="text-sm sm:text-base font-medium">{searchQuery ? 'No matches found' : 'No tracks loaded'}</p>
               <p className="text-xs opacity-60 mt-1">{searchQuery ? 'Try a different search' : 'Select a folder to load music'}</p>
             </div>
           </div>
@@ -110,35 +110,35 @@ export function TrackList({
               onDrop={!isMobile ? (e) => handleDrop(e, idx) : undefined}
               onDragEnd={!isMobile ? handleDragEnd : undefined}
               onClick={() => onTrackClick(track)}
-              className={`w-full text-left ${trackPadding} transition-all duration-300 group ${
+              className={`w-full text-left ${trackPadding} rounded-xl transition-all duration-300 group ${
                 !isMobile && draggedIndex === idx ? 'opacity-50 bg-purple-500/20' : ''
               } ${
                 currentTrack?.name === track.name
-                  ? 'glass-sm ring-2 ring-purple-500'
-                  : 'glass-sm hover:bg-white/10'
+                  ? 'bg-gradient-to-r from-pink-500/20 to-purple-500/20 ring-2 ring-purple-500 shadow-md'
+                  : 'bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10'
               } ${isMobile ? 'cursor-pointer' : 'cursor-move'}`}
             >
               <div className="flex items-center gap-2 sm:gap-3">
-                {!isMobile && <MdDragIndicator size={18} className="opacity-40 flex-shrink-0 hover:opacity-100 transition-opacity" />}
-                <div className={`relative w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-pink-500/30 to-purple-600/30 flex items-center justify-center flex-shrink-0 text-xs font-semibold`}>
+                {!isMobile && <MdDragIndicator size={20} className="text-gray-400 dark:text-white/40 flex-shrink-0 hover:text-gray-600 dark:hover:text-white/100 transition-colors" />}
+                <div className={`relative w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-pink-500/30 to-purple-600/30 flex items-center justify-center flex-shrink-0 text-xs font-semibold rounded-lg shadow-sm`}>
                   {currentTrack?.name === track.name && isPlaying ? (
-                    <MdPlayArrow size={isMobile ? 12 : 14} className="fill-white" />
+                    <MdPlayArrow size={isMobile ? 14 : 16} className="fill-white" />
                   ) : (
-                    <span className="opacity-60">{idx + 1}</span>
+                    <span className="text-gray-700 dark:text-white/60">{idx + 1}</span>
                   )}
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs sm:text-sm font-medium truncate">
+                  <p className="text-xs sm:text-sm font-medium truncate text-gray-900 dark:text-white">
                     {truncateText(track.name, textTruncate)}
                   </p>
-                  <p className="text-xs opacity-60 truncate">
+                  <p className="text-xs text-gray-500 dark:text-white/60 truncate">
                     {truncateText(track.artist || 'Unknown', textTruncate)}
                   </p>
                 </div>
 
                 {currentTrack?.name === track.name && !isMobile && (
-                  <span className="text-xs opacity-60 flex-shrink-0 whitespace-nowrap">
+                  <span className="text-xs text-gray-500 dark:text-white/60 flex-shrink-0 whitespace-nowrap">
                     {formatTime(currentTime)} / {formatTime(duration)}
                   </span>
                 )}
@@ -149,7 +149,7 @@ export function TrackList({
                   }}
                   className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
                 >
-                  <MdFavoriteBorder size={iconSize} className="hover:fill-red-500 hover:text-red-500 transition-colors" />
+                  <MdFavoriteBorder size={iconSize} className="text-gray-500 dark:text-white/60 hover:fill-red-500 hover:text-red-500 transition-colors" />
                 </button>
               </div>
             </button>
